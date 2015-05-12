@@ -1,0 +1,13 @@
+***************
+*** 168,172 ****
+      sprintf(readable,
+  #endif
+-            "%24.24s %u ",
+             date_in_ascii,
+             ntohs(r.fields.uid),
+--- 170,174 ----
+      sprintf(readable,
+  #endif
++            "%24.24s %u %s %u %s %u",
+             date_in_ascii,
+             ntohs(r.fields.uid),

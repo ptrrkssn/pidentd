@@ -1,0 +1,34 @@
+#!/bin/sh
+#
+# identd control script
+#
+# You probably want to modify this!
+#
+
+PIDFILE=/etc/identd.pid
+IDENTD=/usr/local/sbin/identd
+
+
+if [ -f $PIDFILE ]; then
+	pid=`cat $PIDFILE`
+fi
+
+case $1 in
+'start')
+	if [ -x $IDENTD ]; then
+		echo "Starting Identd"
+		$IDENTD
+	fi
+	;;
+
+'stop')
+	if [ "${pid}" != "" ]; then
+		/usr/bin/kill ${pid}
+	fi
+	;;
+
+*)
+	echo 'usage: /etc/init.d/identd {start|stop}'
+	;;
+esac
+

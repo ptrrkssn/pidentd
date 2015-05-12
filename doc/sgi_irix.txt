@@ -1,0 +1,35 @@
+
+POSIX patch sets for pthread support:
+
+IRIX 6.2
+
+     1404 - Irix 6.2 Posix 1003.1b man pages 
+     1645 - IRIX 6.2 & 6.3 POSIX header file updates 
+     2000 - Irix 6.2 Posix 1003.1b support modules 
+     2420 - Pthread library fixes 
+     2458 - rld rollup #9 for 6.2, 6.3, and 6.4: pthreads+security
+
+IRIX 6.3
+
+     1645 - IRIX 6.2 & 6.3 POSIX header file updates 
+     2420 - Pthread library fixes 
+     2458 - rld rollup #9 for 6.2, 6.3, and 6.4: pthreads+security
+
+IRIX 6.4
+
+     2194 - IRIX development environment updates 
+     2420 - Pthread library fixes 
+     2458 - rld rollup #9 for 6.2, 6.3, and 6.4: pthreads+security
+
+Tested on :
+
+baggins.csd : IRIX   5.3 12200158         IP19 compiler version 5.3
+eyeball.csd : IRIX   6.2 06101030         IP22 compiler version 7.1
+canis.csd   : IRIX64 6.2 03131016         IP25 compiler version 7.2
+tankgirl.csd: IRIX   6.3 12161207         IP32 compiler version 7.1
+bootleg.csd : IRIX64 6.4 02121744         IP27 compiler version 7.1
+hod1.ncsa   : IRIX64 6.5-ALPHA-1274191037 IP27 compiler version 7.2
+
+
+
+				- Luc Chouinard, lucc@sgi.com, 25 Nov 1997

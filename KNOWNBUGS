@@ -1,0 +1,7 @@
+* pdes/idecrypt does *not* support IPv6 addresses, so do *not* use
+  DES encryption on systems supporting IPv6 (== Solaris 8). Wait
+  for Pidentd 3.1 which will support this correctly.
+
+* In general - wait for Pidentd 3.1 before using it with IPv6 systems.
+
+

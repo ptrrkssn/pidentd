@@ -1,0 +1,43 @@
+PROBLEMS
+
+Before reporting bugs to me (pen@lysator.liu.se) always first
+try the lastest version(s) of Pidentd, available from:
+
+	ftp://ftp.lysator.liu.se/pub/ident/servers/
+
+Preferable both the latest released, official, version - and
+the latest test version (available from the "test" subdirectory).
+
+Also, always make sure to check the FAQ file for common problems,
+and the KNOWNBUGS file for known problems.
+
+
+LACK OF OPERATING SYSTEM SUPPORT
+
+If the problem you are having is that Pidentd complains about
+not supporting your operating system, then you (or someone else)
+must create a patch and send it to me. I personally can't port Pidentd
+to every possibly Unix on this plan. I try to make sure that Pidentd
+run on the Unixes available locally (mainly Solaris 2, Linux, SGI, Ultrix,
+SunOS 4, AIX, Digital Unix (eh, Tru64Unix or whatever it's called today)
+and Dynix 3).
+
+
+BUG REPORTS
+
+If running the latest version doesn't solve your problem, then send
+me a bug report. In that bug report, *always* include the following
+information:
+
+	Pidentd version
+
+	System Hardware and Operating System
+
+	Which compiler (and version)
+
+	How Pidentd was invoked
+
+	Exactly what is going wrong, including some way for me
+	to repeat that test.
+
+

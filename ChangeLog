@@ -1,0 +1,752 @@
+2005-10-18  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.19
+
+	* A Solaris 10 SMF manifest is now included "etc/identd.xml"
+	
+	* Added support for Solaris 10/x86 for amd64 systems
+
+	* Fixed a small compilation problem with k_sunos510.c
+
+	* Generalized the 64 bit support for Sun Studio compilers
+
+2004-06-13  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.18
+
+	* Added support for Gcc in 64bit-mode
+
+	* Added support for Solaris 10 (from Casper Dik)
+
+	* Fixed a file descriptor leak in request.c.
+
+2003-01-08  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.17
+
+	* src/k_linux.c: Added code from PSz to make it more robust (less false root-positives)
+	
+	* src/main.c (drop_root_privs): Don't try to drop privs unless we're running as user root
+	  This should allow identd to be started as user "sys" on Solaris again.
+
+	* Support for AIX 5.1 added.
+	  
+2002-11-25  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.16
+
+	* send.c: Increased pbuf[] size from 256 to 2048 to
+	  facilitate very long passwd lines.
+	
+	* configure.in: Modified to add support for Solaris 9
+
+2002-03-22  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.15
+	
+	* src/server.c (server_run): Don't complain about on ECONNABORTED and some
+	  other network-related errors
+
+2001-09-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.14
+
+2001-08-31  Peter Eriksson  <pen@lysator.liu.se>
+
+	* main: drop_root_privs(): Drop group privileges
+	
+2001-04-23  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for Digital Unix/OSF 5.0
+
+	* Fixed bug in idecrypt (found by <john.ireland@jesus.ox.ac.uk>)
+
+2000-12-03  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released 3.0.12
+	
+	* main.c: Ignore SIGPIPE
+
+2000-05-21  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released 3.0.11
+
+	* Added workaround for potential future Linux security
+  	  problem (moved the dropping of root privs to before
+	  we create the kernel lookup threads).
+	  
+	* Moved the call to listen() in order to better support "wait"
+   	  mode Inetd daemons.
+	  
+	* Check for rand.h and des.h both in <XXX> and in <openssl/XXX>
+
+	* Updated config.guess and config.sub
+
+2000-05-10  Peter Eriksson  <pen@lysator.liu.se>
+
+	* configure.in: Only set CFLAGS to -O for non GCC compiler
+	  if CFLAGS wasn't set.
+
+	* kernel.c: Sleep one second every other attempt when
+	  doing kernel lookups in order to wait for kernel structures
+	  to stabilize.
+
+2000-01-18  Peter Eriksson  <pen@lysator.liu.se>
+
+	* idecrypt: s_inet_ntoa() -> s_inet_ntox()
+
+	* itest.c: Various bugs fixed so that it should compile and
+	  run again. Not IPv6 compatible.
+	  
+	* A KNOWNBUGS file added with info about IPv6 and DES.
+
+2000-01-16  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Version 3.0.10 released.
+
+	* A file "BUGS" included
+
+2000-01-16  Casper Dik <Casper.Dik@Holland.Sun.COM>
+
+	* Fixes for the Solaris 8 support (previously only supported
+	  the beta releases).
+
+2000-01-14  Casper Dik <Casper.Dik@Holland.Sun.COM>
+
+	* Solaris 8 (including IPv6) support added
+
+1999-12-26  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added missing check for setsid() to configure.in
+
+	* Renamed the PGP signature file to $PACKAGE.tar.gz.sig
+	  (was $PACKAGE.sig).
+
+	* Added an MD5 checksum target
+
+	* Added an "upload" target to the Makefile
+
+	* k_aix42.c: Fixed erroneous call to getuser().
+
+1999-12-26  Matt Gauthier <elleron@yahoo.com>
+
+	* Moved the header file macros above the type macros in
+	  src/config.h.in to facilitate checking for stdint.h before
+	  definiing various uint types and generating a hoard of
+	  warnings with glibc/linux.
+
+	* Add a check to configure.in and code in ikeygen.c to use
+	  /dev/random for key generation instead of SSLeay.
+
+1999-11-13  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed annoying linking error with idecrypt and some warnings.
+
+1999-08-10  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.7
+	
+	* Use s_inet_ntoa() instead of inet_ntoa() for MT-Safeness.
+
+1999-08-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* k_aix42.c: Malloc the 'user' variable to limit the stack usage
+
+	* k_aix42.c: *Really* fixed the memory leak 
+
+	* k_sunos5*.c: Changed syslog level for 'hash miss' to DEBUG
+	
+	* Updateded the configure script (needed to run autoconf)
+
+1999-08-02  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Released version 3.0.6
+	
+	* Always retry the kernel lookup in case of errors.
+	
+	* Support for IBM AIX 4.3.2 added.
+
+	* Compiling without threads for Solaris 2.6 should work now.
+
+	* Compiling with IBMs own C compiler on AIX should work now.
+
+1999-07-24  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed Linux problem with runaway threads
+
+	* Fixed memory leak for AIX 4.2
+
+1999-02-22  Peter Eriksson  <pen@lysator.liu.se>
+
+	* REALLY fixed the stupid "-l" compatibility stuff (for got
+	  about adding it to the "getopt()" string.
+
+	* Added a warning about LD_LIBRARY_PATH for Solaris 7/64bit
+
+1999-01-26  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Configure script modified to add support for DEC OSF/1 3.2
+
+1999-01-21  Peter Eriksson  <pen@lysator.liu.se>
+
+	* conf.c (conf_parse): Incorrect handling of "result:syslog-level".
+
+	* Incorrect handing of sprintf() return value (can not assume that
+	  it always returns an 'int' (non-ANSI/ISO-C compliant systems)).
+
+	* safeio.c: Cosmetic changes. s_strdup() now calls s_abort() in
+	  case of a failure instead of exit(1).
+
+1999-01-19  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Invalid command line options was incorrectly handled.
+	
+	* Added "-l" option to ease backwards compatibility with version 2.
+	  (but with different meaning, "-l" now just logs a startup message
+	  at syslog level LOG_INFO instead of LOG_DEBUG).
+
+1999-01-16  Peter Eriksson  <pen@lysator.liu.se>
+
+	* k_linux.c: Linux uid_t is unsigned short which breaks
+	  the sscanf() call.
+
+1999-01-13  Peter Eriksson  <pen@lysator.liu.se>
+
+	* The manual page was missing, added to the distribution again.
+
+	* Added a section to the README file describing what
+	  this daemon does.
+
+1999-01-12  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Version 3.0 released
+
+1999-01-11  Peter Eriksson  <pen@lysator.liu.se>
+
+	* k_sunos57.c: Moved some includes to remove warnings.
+
+1999-01-09  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Use vsnprintf() in a s_snprintf() wrapper instead of sprintf()
+
+	* k_irix5.c: Use s_open() instead of open()
+
+1999-01-09  Peter Eriksson  <pen@lysator.liu.se>
+
+	* pidentd.h: Only include "pdes.h" if HAVE_LIBDES is defined.
+	
+	* config.h.in: Added missing HAVE_UNISTD_H define
+
+	* request.c: Typecast char -> unsigned char before
+	  using isXXXX() macros.
+
+	* send.c: Missing inet_ntoa() defining header files.
+	
+	* str2.c: Typecast char -> unsigned char before
+	  using isXXXX() macros.
+
+	* ibench.c: Cosmetic changes
+
+	* ikeygen.c: Cosmetic changes
+
+	* ikeygen.c: ftruncate() takes two arguments, not one!
+	
+1999-01-09  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Default socklen_t to 'int' instead of 'size_t' (unless
+	  we are using AIX). This makes IRIX shut up also.
+
+Fri Jan  8 22:55:30 1999  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added some entries in the FAQ file for HP-UX 9 and
+	  Digital Unix 4.0D & 4.0E
+
+	* Define the right return type from signal handles.
+
+	* "make install" now doesn't assume that the "install"
+	  program can handle multiple files
+
+	* Some more Makefile cleanup
+
+	* Default socklen_t to size_t instead of unsigned. This makes
+	  AIX shut up about getsockname() warnings.
+
+1999-01-07  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Configure/config.h: Check for uint32_t/uint16_t/uint8_t types.
+	
+	* pdes.c: Make sure the key contains atleast one NUL character
+	
+	* idecrypt.c: Make sure the key contains atleast one NUL character
+
+1999-01-06  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Massive configure.in and Makefile.in bug fixes
+	  (how on earth did they ever work?)
+	  
+	* Updated to use autoconf 2.13
+	
+	* DES encryption should now use the last key in the
+	  key file (like Pidentd v2 did).
+
+	* The Idecrypt program is now included again
+
+	* An Igenkey program is now included which can be used
+	  to generate a new DES key.
+
+	* Configure options --with-des-libraries=DIR and
+	  --with-des-includes=DIR can be used to locate
+	  libdes or libcrypto if they are installed in
+	  an nonstandard directory.
+
+1999-01-05  Peter Eriksson  <pen@lysator.liu.se>
+
+	* INSTALL file updated
+
+	* Running "make all" will now make Identd, Ibench and Itest.
+
+	* k_sunos54.c: Moved the include of pidentd.h so that the
+	  file will compile.
+
+	* k_aix42.c: c/SET_SET/SEEK_SET/
+
+	* Added an "include PATH" directive to the config file
+	  parser.
+
+Tue Jan  5 15:29:23 1999  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Digital Unix memory leak bugfix
+
+	* Ibench now correctly initializes the LOOPBACK address.
+
+	* More Ibench changes: Understands "-h" for Help. Defaults
+	  to run 60 seconds to Localhost. Terminates nicely at
+	  reception of SIGINT (Ctrl-C).
+	  
+1999-01-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Default directory for the identd.conf, identd.pid
+	  and identd.key files are now in /usr/local/etc,
+	  specified via the "sysconfdir" option. 
+
+1999-01-04  David Lee <T.D.Lee@durham.ac.uk>
+
+	* Makefile fixes for manfile installation and a rule
+	  added for Makefile regeneration.
+
+1999-01-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* k_irix5.c: Fixed a problem with "#if 0" bein in the
+	  wrong place (I removed all of the old code).
+
+	* Added a "result:syslog-level" config file option, which
+	  if set to a specific option will case all replies to a
+	  request to be syslogged at that level.
+
+1998-11-28  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added a --with-des option to configure to enabled/disable
+	  usage of a DES library.
+
+1998-11-22  Peter Eriksson  <pen@lysator.liu.se>
+
+	* pdes.c: If no ruid known, use the euid (for example
+	  under Linux) when encrypting the response. We really
+	  should include both. 
+
+1998-11-17  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* Lots of lots of cosmetic changes:
+	
+	* src/k_aix42.c (kread), src/k_osf4.c (ka_init), src/pdes.c
+	(init_decryption, decrypt_packet), timeout.c (sigalarm_handler):
+	Convert function definitions to prototype format. 
+
+	* all sources: Avoid typed NULL pointers.
+
+	* src/k_irix5.c (stval): Removed unused third arg priv.
+	(ka_lookup): Changed caller.
+	(getusers): Replaced bcopy, bzero by memcpy, memset.
+
+	* k_next_mach.c: Added for support of Next.
+	
+Fri Nov 13 00:07:09 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* all sources: Don't cast s_malloc return value to specific
+	pointer type. 
+
+	* all sources: Avoid non-boolean implicit 0 comparison.
+	* all sources: Avoid implicit NULL or '\0' comparison. 
+
+	* all sources: Fixed indentation.
+
+
+Wed Nov  4 21:34:22 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* INSTALL: Updated to reflect Solaris 7 name change.
+	egcs 1.1 still cannot generate 64-bit code (although current
+	snapshots are coming close).
+
+Tue Jul 14 14:04:22 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* INSTALL: mention need for SunPro C 5.0 for Solaris 2.7 64-bit
+
+	* configure.in (*-solaris2.7): reject gcc on 64-bit kernel, force
+	64-bit compilation with cc
+
+Wed Jul  8 22:39:36 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* src/k_sunos57.c: use uint{16, 32}_t instead of old (from
+	<inet/led.h>) u{16, 32}.
+
+1998-11-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Encrypted tokens are again enclosed in [] as in Pidentd-2.
+
+	* Irix 6 euid/ruid bugfix.
+	
+1998-11-04  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added "-L" command line option
+
+	* Print errors to stderr for invalid command line options
+	  when started manually.
+
+1998-11-03  Peter Eriksson  <pen@lysator.liu.se>
+
+	* It's my birthday today! :-)
+
+	* Changed strdup() -> s_strdup() in main.c
+
+	* "pidentd" -> "identd" in the etc/identd.init script
+
+	* Updated the INSTALL documentation somewhat.
+
+	* Syslog facility now case insensitive
+	
+Tue Jul 14 14:04:22 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* safeio.c (random_lock_init): cannot use &seed (unsigned int)
+ 	where time_t * is required on 64-bit host
+
+	* main.c (main): provide missing fprintf() argument
+	pdes_init() requires non-NULL keyfile arg now
+	
+	* src/config.h.in: define HAVE_LIBDES iff HAVE_LIBCRYPTO
+
+	* configure.in: check for des_set_key in SSLeay -lcrypto too
+
+Thu Jul  9 01:20:22 1998  Rainer Orth  <ro@TechFak.Uni-Bielefeld.DE>
+
+	* src/itest.c (main): remove unused variables uid, res
+
+	* src/main.c (main): use return instead of exit to avoid compiler
+	warning 
+
+	* src/pkvm.c: include <unistd.h> for close(), lseek() declarations
+
+	* src/k_irix5.c: include <stdlib.h> for calloc(), malloc()
+	declarations 
+	(pname): cast pid_t args to int to match sprintf format
+	(ka_lookup): remove unused variables n1, n2
+	
+	* src/safeio.c: include <math.h> for srandom() declaration
+
+	* configure.in (irix): don't define _POSIX_C_SOURCE=199506L, it's
+	unnecessary and makes many necessary prototypes unavailable
+
+	* src/itest.c (main): assure that struct kernel k is initialized
+	convert port numbers to network byte order
+	
+	* src/Makefile.in: avoid unnecessary use of /tmp
+
+	* src/main.c: handle multiple -d flags
+
+	* src/itest.c (main): handle ka_init(), ka_open() failures
+	don't define useless globals
+	use getopt(), handle multiple -d flags
+	
+	* src/k_osf4.c (ka_lookup): fix fprintf() format: in_addr_t s_addr
+	is unsigned int, not long
+
+	* src/Makefile.in (KOBJS): need to include pkvm.o in KOBJS to
+ 	allow itest to link
+
+	* configure.in (osf4): use -D_REENTRANT instead of -D_THREAD_SAVE,
+	omit explicit -lc, like cc -pthread does
+
+	* src/daemon.c: include <string.h> for strlen() declaration
+
+	* src/daemon.c: include <sys/stat.h> for umask() declaration
+
+	* src/send.c: include <string.h> for strlen(), memcpy(), strcpy()
+	declarations
+
+	* src/server.c (server_run): tid removed, unused
+
+	* src/main.c: include <thread.h> only if HAVE_LIBTHREAD
+
+	* src/main.c (main): use return instead of exit to avoid warning
+
+	* src/itest.c (main): ka_lookup doesn't set k.status
+	
+1998-06-01  Peter Eriksson  <pen@lysator.liu.se>
+
+	* AIX 4.3 portability fixes
+
+1998-05-23  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed network byte order problems in pdes.c
+
+1998-03-20  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added missing "o" option to getopt() call in main.c
+
+Tue Dec 30 00:08:05 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added missing call to pdes_init() in main.c
+
+	* Added encrypt_keyfile variable and "encrypt:key-file" option
+	  to the config file.
+
+	* Created a manual page.
+
+Mon Dec  1 21:39:28 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Reverted back to the old thr_setconcurrency() setting
+	  (SunOS 5.4 broke with the new definition)
+
+Mon Dec  1 18:21:14 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Better handling of the SIGALRM signal.
+
+	* ibench updated to allow remote testing.
+
+	* Include CFLAGS even in the link phase
+	
+Mon Dec  1 16:08:49 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* timeout->when is now a time_t instead of a timestruc
+	
+	* s_getpw*_r() changed from macros to functions (support.c)
+
+Fri Nov 28 00:10:08 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Rewrote the timeout.c code to use a single thread instead of
+	  one per timeout.
+
+	* Corrected the PTHREAD_CREATE_JOINABLE define for cma-threads.
+
+Thu Nov 27 00:39:00 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* ibench.c: Use getpwuid(getuid()) instead of cuserid().
+
+Wed Nov 26 22:34:10 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added a small benchmarking/stress-testing program "ibench".
+	
+	* Added a "--without-getpw_r" command line option to "configure"
+	  to make it possible to build Pidentd without using the
+	  reentrant passwd access functions getpwuid_r() and getpwnam_r().
+	  (Some versions of some Unixes have buggy implementations).
+
+Wed Nov 26 18:47:27 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Option "-o" makes the daemon to return OTHER instead of UNIX
+	  for compatibility with Pidentd v2.
+
+Wed Nov 26 16:54:22 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Use the old k_irix4.c file for IRIX 4.*
+
+	* Include the "itest" program.
+
+	* "make install" misfeature fixed.
+
+Wed Nov 26 14:04:03 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Modifed k_irix.c to only include <standards.h> if using pthreads.
+
+	* Modifed src/Makefile.in to include correct "-I" options.
+
+	* Added a missing errno in a debugging printf() in pkvm.c
+
+Wed Nov 26 00:25:28 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Handle getpw*() in a better way for no-threads versions.
+	
+	* Added a much updated SGI IRIX code from Luc (which should make
+	  it much faster, and should work on a wider range of SGIs).
+
+Thu Oct 30 23:47:07 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added code to timeout hanging connections (default: 2 min)
+
+	* Added a couple of command line options.
+
+Thu Oct 30 14:10:54 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for HP-UX 7, 8 and 9. (Only tested on HP-UX 9.0.3)
+
+Thu Oct 30 00:01:05 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Calling sequence for ka_open() changed.
+
+	* Modified the become_daemon() code a bit.
+	
+	* Added DES encryption support (enable via "-E" command
+	  line option, or using "result:encrypt = true" in the config file).
+
+	* Added a "Makefile.dist" containing the distribution creation
+	  stuff so I can do a "make -f Makefile.dist dist" without having
+	  to do a "./configure" first. Also supports generating a PGP
+	  signature file.
+	  
+Wed Oct 29 01:17:48 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Support for IRIX 6.3 added.
+
+Sun Oct 19 18:36:44 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Support for IRIX 4 added (without threads)
+
+Wed Oct 15 23:29:06 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Modified the Makefile(s) to support building in
+	  alternative directories.
+
+	* Fixed a bug in the Configure script with regard to libkvm detection.
+	
+	* Fixed some warnings detected by "gcc -Wall".
+
+	* Should compile on SunOS 5.4 again.
+
+	* Added "result:opsys" config file option.
+
+Wed Oct 15 03:33:15 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Charset support added.
+
+	* Removed the $HOME/SOCKTYPE_CONNECTED guessing logic.
+
+Wed Oct 15 00:19:01 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Modified the /etc/pidentd.conf syntax
+
+	* Added support for the ~/.noident file
+
+Mon Oct 13 17:13:12 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Even even more configure script changes :-)
+
+Mon Oct 13 16:33:07 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed the pkvm.c handling (only compile it if a libkvm is needed
+	  and there isn't a system version).
+
+Mon Oct 13 01:00:35 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Fixed the broken Digital Unix and Ultrix code.
+
+	* Even more configure script hacks.
+
+	* Now detects DCE-style getpw..._r() functions correctly.
+	
+	* Use -D_POSIX_C_SOURCE=199506L for Solaris 2.5 and 2.6.
+
+Sat Oct 11 17:39:03 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* More configure script hacks
+
+	* Support added for Proven's pthreads library.
+
+	* Made it possible to select which threads library to use
+	  with the "--with-threads=[LIB]" configure script option
+	  in case multiple thread libraries are available.
+	  
+Sat Oct 11 01:08:51 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* AIX threads are now supported.
+
+	* Some configure script restructuring.
+
+	* A FAQ (Frequently Asked Questions) file added.
+
+Thu Oct  9 01:01:13 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Support added for IBM AIX 4.2 (without threads)
+
+Wed Oct  8 21:33:30 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Removed erroneous ntohs() calls in k_sunos5*.c
+
+Mon Oct  6 00:08:17 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Changed the kernel lookup return values
+	  (-1 = err, 0 = not found, 1 = found)
+
+	* Generalized the "send_error" stuff.
+
+	* Added support for errors "INVALID-PORT" & "NO-USER"
+
+Wed Oct  1 00:35:38 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for HP/UX 10.20
+
+	* Wrote a replacement <cma_pthread.h> for HP's DCE/CMA-threads
+	  so one can use the DCE/CMA threads library that they include 
+	  even though HP omitted the header files...
+
+Mon Sep 29 22:26:34 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for DCE/CMA threads
+
+	* Added support for Digital Ultrix 4.5
+
+Mon Sep 29 00:34:35 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for Digital Unix 4.0.
+
+	* Use a cond_var+mutex to protect the kernel-lookup
+	  return data (in an "avail_t" data structure).
+	  
+Sat Sep 27 16:14:46 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added support for starting from /etc/inittab
+
+Sat Sep 27 00:12:30 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Support for operating systems without threads added
+	  (it simply handles one request at a time, one by one... slow!)
+
+Fri Sep 26 17:19:44 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Support for Solaris 2.4 added
+
+	* Support for Inetd "nowait" mode added.
+
+Tue Sep 23 00:51:33 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Multiquery mode implemented. Moved the sending of the
+	  reply out from the kernel thread and back to the request
+	  thread.
+
+	* Added support for an /etc/pidentd.conf file.
+
+	* Restructured the code a bit.
+
+Sun Sep 21 23:54:06 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added -u<user> and -g<group> command line options
+	  to change the uid/gid the server runs as after it has
+	  opened the kernel devices.
+
+Sat Sep 20 00:52:40 1997  Peter Eriksson  <pen@lysator.liu.se>
+
+	* Added logic to verify that a compiled binary is being run
+	  on a supported operating system version.
+
+	* Fixed an error in the handling of extended protocol commands
+	  where it didn't close the request socket.
+
+

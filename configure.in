@@ -1,0 +1,477 @@
+dnl Process this file with autoconf to produce a configure script.
+
+dnl Try to detect the return type of sprintf()
+AC_DEFUN(AC_CHECK_SPRINTF_RETVAL_POINTER, [
+AC_CACHE_CHECK([for sprintf() returning 'char *'], ac_cv_sprintf_retval_pointer, [
+AC_TRY_COMPILE([
+#include <stdio.h>
+],[
+   char buf[10];
+   return *sprintf(buf, "%d", 10);
+],
+ac_cv_sprintf_retval_pointer=yes, ac_cv_sprintf_retval_pointer=no)])
+if test "$ac_cv_sprintf_retval_pointer" = "yes"; then
+	AC_DEFINE(SPRINTF_RETVAL_POINTER)
+fi
+])
+
+
+
+dnl Try to detect the type of the third arg to getsockname() et al
+AC_DEFUN(AC_TYPE_SOCKLEN_T,
+[AC_CACHE_CHECK(for socklen_t in sys/socket.h, ac_cv_type_socklen_t,
+[AC_EGREP_HEADER(socklen_t, sys/socket.h,
+  ac_cv_type_socklen_t=yes, ac_cv_type_socklen_t=no)])
+if test $ac_cv_type_socklen_t = no; then
+	AC_MSG_CHECKING(for AIX)
+	AC_EGREP_CPP(yes, [
+#ifdef _AIX
+ yes
+#endif
+],[
+AC_MSG_RESULT(yes)
+AC_DEFINE(socklen_t, size_t)
+],[
+AC_MSG_RESULT(no)
+AC_DEFINE(socklen_t, int)
+])
+fi
+])
+
+
+dnl extracted from autoconf 2.12 acspecific.m4 AC_FUNC_GETLOADAVG
+
+AC_DEFUN(AC_STRUCT_NLIST,
+[AC_CHECK_HEADER(nlist.h,
+[AC_DEFINE(NLIST_STRUCT)
+AC_CACHE_CHECK([for n_un in struct nlist], ac_cv_struct_nlist_n_un,
+[AC_TRY_COMPILE([#include <nlist.h>],
+[struct nlist n; n.n_un.n_name = 0;],
+ac_cv_struct_nlist_n_un=yes, ac_cv_struct_nlist_n_un=no)])
+if test $ac_cv_struct_nlist_n_un = yes; then
+  AC_DEFINE(NLIST_NAME_UNION)
+fi
+])
+])
+
+
+AC_INIT(src/pidentd.h)
+
+AC_CONFIG_AUX_DIR(aux)
+AC_CONFIG_HEADER(src/config.h)
+AC_PREREQ(2.10)
+
+AC_ARG_WITH(threads,
+[  --with-threads[=ARG]    enable usage of threads [ARG=yes]])
+
+if test "$with_threads" = "" || test "$with_threads" = "auto"; then
+	with_threads=yes
+elif test "$with_threads" = "solaris"; then
+	with_threads=ui
+elif test "$with_threads" = "cma"; then
+	with_threads=dce
+fi
+
+
+AC_ARG_WITH(getpw_r,
+[  --with-getpw_r[=ARG]    enable usage of getpw..._r functions [ARG=yes]])
+
+
+AC_PROG_CC
+if test "$ac_cv_prog_gcc" = "no"; then
+	if test "$CFLAGS" = ""; then
+		CFLAGS="$CFLAGS -O"
+	fi
+fi
+
+AC_ARG_WITH(des,
+[  --with-des[=ARG]        enable usage of DES encryption [ARG=yes]])
+
+AC_ARG_WITH(des-includes,
+[  --with-des-includes=DIR DES include files are in DIR])
+AC_ARG_WITH(des-libraries,
+[  --with-des-libraries=DIR DES library file are in DIR])
+
+if test "$with_des_includes"; then
+	CPPFLAGS="$CPPFLAGS -I$with_des_includes"
+	if test "$with_des" = ""; then
+		with_des=yes
+	fi
+fi
+
+if test "$with_des_libraries"; then
+	LDFLAGS="$LDFLAGS -L$with_des_libraries"
+	dnl How to handle -R$with_des_libraries ???
+	if test "$with_des" = ""; then
+		with_des=yes
+	fi
+fi
+
+
+
+AC_CANONICAL_HOST
+
+need_libkvm=yes
+
+case "$host" in
+	*-aix4.3.2* | *-aix5*)
+		host_os=aix432
+		;;
+	*-aix4.2* | *-aix4.3*)
+		host_os=aix42
+		;;
+	*-irix4*)
+		host_os=irix4
+		AC_DEFINE(_PATH_UNIX,"/unix")
+		;;
+	*-irix5* | *-irix6*)
+		host_os=irix5
+		AC_DEFINE(_PATH_UNIX,"/unix")
+		;;
+	*-hpux7*)
+		host_os=bsd42
+		AC_DEFINE(_PATH_UNIX, "/hp-ux")
+                if test "$ac_cv_prog_gcc" = "no"; then
+                        CPPFLAGS="$CPPFLAGS -DHPUX7 -Ae"
+                fi
+                ;;
+	*-hpux8* | *-hpux9*)
+		host_os=bsd42
+		AC_DEFINE(_PATH_UNIX, "/hp-ux")
+                if test "$ac_cv_prog_gcc" = "no"; then
+                        CPPFLAGS="$CPPFLAGS -Ae"
+                fi
+                ;;
+	*-hpux10*)
+		host_os=bsd42
+		AC_DEFINE(_PATH_UNIX,"/stand/vmunix")
+		if test "$ac_cv_prog_gcc" = "no"; then
+			CPPFLAGS="$CPPFLAGS -Ae"
+		fi
+		;;
+	*-linux*)
+		host_os=linux
+		need_libkvm=no
+		;;
+	*-nextstep3*)
+		host_os=next_mach
+		AC_DEFINE(_PATH_UNIX, "/mach")
+		;;
+	*-ultrix4*)
+		host_os=bsd42
+		LIBS="$LIBS -li"
+		;;
+	*-osf4*|*-osf3.2*)
+		host_os=osf4
+		;;
+	*-osf5*)
+		host_os=osf5
+		;;
+	*-sunos4*)
+		host_os=bsd42
+		;;
+	*-solaris2.4*)
+		host_os=sunos54
+		;;
+	*-solaris2.5*)
+		host_os=sunos55
+		;;
+	*-solaris2.6)
+		host_os=sunos56
+		;;
+	*-solaris2.7|*-solaris2.8|*-solaris2.9|*-solaris2.10)
+		case "$host" in
+			*7) host_os=sunos57
+			    ;;
+			*8|*9)
+			    host_os=sunos58
+			    CPPFLAGS="$CPPFLAGS -DHAVE_IPV6=1"
+			    ;;
+			*10)
+			    host_os=sunos510
+			    CPPFLAGS="$CPPFLAGS -DHAVE_IPV6=1"
+			    ;;
+		esac
+		ISA="`isainfo -k`"
+		if test "$ISA" = "sparcv9" -o "$ISA" = "amd64"; then
+			if test "$LD_LIBRARY_PATH" != "" ; then
+				AC_MSG_WARN([
+
+WARNING: You have the LD_LIBRARY_PATH environment variable set.
+         This is almost never the right thing to do, and it will
+         very likely cause a lot of problems when running
+         Pidentd later. Please consider unsetting it.
+])
+			fi
+
+			if test "$ac_cv_prog_gcc" = "yes"; then
+				CFLAGS="$CFLAGS -m64"
+			else
+				CFLAGS="$CFLAGS -xarch=generic64"
+			fi
+		fi
+		;;
+	*)
+		AC_MSG_ERROR([
+
+ERROR: Pidentd 3 does not support '$host' yet.
+       Please read the INSTALL file for more information.
+])
+
+		;;
+esac
+
+
+AC_PROG_INSTALL
+AC_PROG_MAKE_SET
+
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h kvm.h stdint.h)
+
+AC_TYPE_PID_T
+AC_TYPE_UID_T
+AC_TYPE_MODE_T
+AC_TYPE_SIZE_T
+AC_TYPE_SIGNAL
+AC_TYPE_SOCKLEN_T
+AC_TYPE_OFF_T
+
+AC_CHECK_TYPE(ssize_t, int)
+AC_CHECK_TYPE(uint32_t, unsigned int)
+AC_CHECK_TYPE(uint16_t, unsigned short)
+AC_CHECK_TYPE(uint8_t, unsigned char)
+
+AC_STRUCT_NLIST
+
+AC_CHECK_FUNCS(snprintf vsnprintf)
+AC_CHECK_SPRINTF_RETVAL_POINTER
+
+AC_CHECK_FUNCS(memcpy uname)
+AC_CHECK_FUNCS(random srandom)
+AC_CHECK_FUNCS(setsid ftruncate)
+
+AC_CHECK_FUNCS(socket)
+if test "$ac_cv_func_socket" = "no"; then
+	AC_CHECK_LIB(socket, socket)
+	AC_DEFINE(HAVE_SOCKET, 1)
+fi
+
+AC_CHECK_FUNCS(gethostbyname)
+if test "$ac_cv_func_gethostbyname" = "no"; then
+	AC_CHECK_LIB(nsl, gethostbyname)
+	AC_DEFINE(HAVE_GETHOSTBYNAME, 1)
+fi
+
+if test "$need_libkvm" = "yes"; then
+	AC_DEFINE(NEED_LIBKVM, 1)
+
+	AC_CHECK_FUNCS(nlist)
+	if test "$ac_cv_func_nlist" = "no"; then
+		AC_CHECK_LIB(elf, nlist)
+		if test "$ac_cv_lib_elf_nlist" = "yes"; then
+			AC_DEFINE(HAVE_NLIST, 1)
+		else
+			AC_CHECK_LIB(mld, nlist)
+			if test "$ac_cv_lib_mld_nlist" = "yes"; then
+				AC_DEFINE(HAVE_NLIST, 1)
+			fi
+		fi
+	fi
+
+	AC_CHECK_FUNCS(kvm_open)
+	if test "$ac_cv_func_kvm_open" = "no"; then
+		AC_CHECK_LIB(kvm, kvm_open)
+		if test "$ac_cv_lib_kvm_kvm_open" = "yes"; then
+			AC_DEFINE(HAVE_KVM_OPEN, 1)
+		fi
+	fi
+fi
+
+CRYPTO_PROGRAMS=
+CRYPTO_OBJS=
+
+if test "$with_des" = "" || test "$with_des" = "yes";then
+	dnl check in SSLeay -lcrypto
+	AC_CHECK_HEADERS(des.h)
+	AC_CHECK_HEADERS(openssl/des.h)
+	AC_CHECK_HEADERS(rand.h)
+	AC_CHECK_HEADERS(openssl/rand.h)
+	AC_CHECK_LIB(crypto, RAND_bytes)
+	if test "$ac_cv_lib_crypto_RAND_bytes" = "yes"; then
+		AC_DEFINE(HAVE_RAND_BYTES, 1)
+		AC_DEFINE(HAVE_LIBDES, 1)
+		CRYPTO_PROGRAMS="idecrypt ikeygen"
+		CRYPTO_OBJS="pdes.o"
+	else
+		dnl check for the -ldes library instead
+		AC_CHECK_LIB(des, des_set_key)
+		if test "$ac_cv_lib_des_des_set_key" = "yes"; then
+		    AC_MSG_CHECKING(for /dev/random)
+		    if test -r /dev/random; then
+			AC_DEFINE(HAVE_DEV_RANDOM, 1)
+			AC_MSG_RESULT(yes)
+		    else
+			AC_MSG_RESULT(no)
+		    fi
+		    CRYPTO_PROGRAMS="idecrypt ikeygen"
+		    CRYPTO_OBJS="pdes.o"
+		fi
+	fi
+fi
+
+have_threads=no
+if test "$with_threads" != "no"; then
+	AC_CHECK_HEADERS(pthread.h thread.h)
+
+	dnl Check for Posix threads (in various incarnations)...
+
+   	if test "$with_threads" = "yes" || test "$with_threads" = "posix"; then
+		AC_CHECK_LIB(pthread, pthread_attr_init)
+	fi
+	if test "$ac_cv_lib_pthread_pthread_attr_init" = "yes"; then
+		have_threads=posix
+	else
+
+   	if test "$with_threads" = "yes" || test "$with_threads" = "posix"; then
+		AC_CHECK_LIB(pthreads, pthread_attr_init)
+	fi
+	if test "$ac_cv_lib_pthreads_pthread_attr_init" = "yes"; then
+		have_threads=posix
+	else
+
+
+	dnl Check for Unix International threads
+
+   	if test "$with_threads" = "yes" || test "$with_threads" = "ui"; then
+		AC_CHECK_LIB(thread, thr_create)
+	fi
+	if test "$ac_cv_lib_thread_thr_create" = "yes"; then
+		have_threads=ui
+	else
+
+
+	dnl Check for DCE/CMA threads (an early Posix threads)
+
+   	if test "$with_threads" = "yes" || test "$with_threads" = "dce"; then
+		AC_CHECK_LIB(cma, pthread_attr_create,,,$OS_LIBS)
+	fi
+	if test "$ac_cv_lib_cma_pthread_attr_create" = "yes"; then
+		have_threads=dce
+	fi
+	fi
+	fi
+	fi
+	
+	dnl If that failed - warn the user
+	if test "$have_threads" = "no"; then
+		AC_MSG_WARN([
+
+WARNING: No usable threads library found.
+         Building without threads support.
+         Please see the INSTALL file for special instructions.
+])
+
+	else
+
+		case "$host" in
+		*-aix4.2* | *-aix4.3* | *-aix5*)
+			if test "$GCC" = "yes"; then
+			  CPPFLAGS="$CPPFLAGS -D_THREAD_SAFE"
+			  LDFLAGS="-nostartfiles /usr/lib/crt0_r.o $LDFLAGS"
+			  LIBS="$LIBS -L/usr/lib/threads -lpthreads -lc_r /usr/lib/libc.a"
+			else
+			  CC=cc_r
+			fi
+			;;
+		*-hpux10*)
+			CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+			;;
+		*-osf4*)
+			CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+			LIBS="$LIBS -lmach -lexc"
+			;;
+		*-solaris2.*)
+			if test "$have_threads" = "posix"; then
+				CPPFLAGS="$CPPFLAGS -D_POSIX_C_SOURCE=199506L -D__EXTENSIONS__"
+			else
+				CPPFLAGS="$CPPFLAGS -D_REENTRANT"
+			fi
+			;;
+		esac
+
+		AC_DEFINE(HAVE_THREADS,1)
+		if test "$with_getpw_r" = "" || test "$with_getpw_r" = "yes"
+		then
+			AC_CHECK_FUNCS(getpwnam_r getpwuid_r)
+		fi
+		AC_CHECK_FUNCS(thr_setconcurrency)
+	fi
+fi
+
+
+if test "$ac_cv_func_getpwuid_r" != "yes"; then
+
+dnl Check for IRIX -lsun for YP-enabled getpwuid() routines
+AC_CHECK_LIB(sun, getpwuid)
+
+else
+
+dnl Find out the calling sequence for the getpw*_r functions
+
+AC_MSG_CHECKING(for Posix-style getpw..._r)
+AC_TRY_LINK([
+#include <pwd.h>
+],[
+struct passwd pwb, *pp;
+char buf[1024];
+int result;
+
+result = getpwuid_r(0, &pwb, buf, sizeof(buf), &pp);
+], [
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_POSIX_GETPW,1)
+], [
+AC_MSG_RESULT(no)
+
+
+AC_MSG_CHECKING(for UI-style getpw..._r)
+AC_TRY_LINK([
+#include <pwd.h>
+],[
+struct passwd pwb;
+char buf[1024];
+
+pwb = *getpwuid_r(0, &pwb, buf, sizeof(buf));
+], [
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_UI_GETPW,1)
+], [
+AC_MSG_RESULT(no)
+
+
+AC_MSG_CHECKING(for DCE-style getpw..._r)
+AC_TRY_LINK([
+#include <pwd.h>
+],[
+struct passwd pwb;
+char buf[1024];
+int result;
+
+result = getpwuid_r(0, &pwb, buf, sizeof(buf));
+], [
+AC_MSG_RESULT(yes)
+AC_DEFINE(HAVE_DCE_GETPW,1)
+], [
+AC_MSG_RESULT(no)
+])])])
+
+fi
+
+
+AC_SUBST(CRYPTO_PROGRAMS)
+AC_SUBST(CRYPTO_OBJS)
+
+AC_OUTPUT(Makefile src/Makefile)
+
+
+

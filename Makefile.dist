@@ -1,0 +1,59 @@
+# Makefile.dist for Pidentd 3.0
+#
+# This file can not be used to build Pidentd - it's only used to
+# generate the distribution files
+#
+
+SCP = scp
+TAR = tar
+PGPSIGN = gpg
+MD5SUM = md5sum -b
+GZIP = gzip
+UPLOAD_TARGET = pen@ftp.lysator.liu.se:~ftp/pub/ident/servers/test
+
+all:
+	@echo 'Sorry, this file (Makefile.dist) can not be used'
+	@echo 'to make Pidentd - use the ./configure script to'
+	@echo 'create a Makefile.'
+	@exit 1
+
+
+clean mostlyclean:
+	(cd src ; rm -f identd gen_osinfo itest ibench idecrypt ikeygen *.o)
+	rm -f core *~ \#*
+	rm -f */core */*~ */\#*
+
+
+distclean maintainer-clean: mostlyclean
+	rm -fr autom4te.cache src/Makefile src/config.h Makefile config.status config.log config.cache 
+
+
+configure:	configure.in
+	autoconf
+
+#
+version:
+	(PACKNAME=`basename \`pwd\`` ; echo 'char server_version[] = "'`echo $$PACKNAME | cut -d- -f2`'";' >src/version.c)
+
+#
+
+dist:	version distclean configure
+	(PACKNAME=`basename \`pwd\`` ; cd .. ; $(TAR) cf - $$PACKNAME | gzip -9 >$$PACKNAME.tar.gz)
+
+
+sign:	dist
+	(PACKNAME=`basename \`pwd\`` ; cd .. ; $(PGPSIGN) -ab -o $$PACKNAME.tar.gz.sig $$PACKNAME.tar.gz && chmod go+r $$PACKNAME.tar.gz.sig)
+
+md5:	dist
+	(PACKNAME=`basename \`pwd\`` ; cd .. ; $(MD5SUM)  $$PACKNAME.tar.gz >$$PACKNAME.tar.gz.md5 && chmod go+r $$PACKNAME.tar.gz.md5)
+
+upload:	dist md5 sign
+	(PACKNAME=`basename \`pwd\`` ; cd .. ; $(SCP) $$PACKNAME.tar.gz $$PACKNAME.tar.gz.sig $$PACKNAME.tar.gz.md5 $(UPLOAD_TARGET))
+
+Makefile Makefiles: Makefile.in src/Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+

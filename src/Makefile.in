@@ -1,0 +1,79 @@
+# Makefile.in for Pidentd 3.0
+
+.KEEP_STATE:
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+sbindir = @sbindir@
+sysconfdir = @sysconfdir@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+CC = @CC@
+DEFS= @DEFS@ @CPPFLAGS@
+CFLAGS = @CFLAGS@
+LDFLAGS = @LDFLAGS@ @LIBS@
+INSTALL = @INSTALL@
+
+
+TAR = tar
+
+@SET_MAKE@
+
+CRYPTO_OBJS = @CRYPTO_OBJS@
+
+PROGRAMS = identd ibench @CRYPTO_PROGRAMS@
+
+KOBJ =	k_@host_os@.o pkvm.o
+
+OBJS =	main.o server.o request.o kernel.o send.o \
+	daemon.o safeio.o support.o conf.o str2.o \
+	buffer.o timeout.o avail.o $(CRYPTO_OBJS) \
+	c_osinfo.o version.o
+
+all:	$(PROGRAMS)
+
+identd:	$(OBJS) $(KOBJ)
+	$(CC) $(CFLAGS) -o identd $(OBJS) $(KOBJ) $(LDFLAGS)
+
+ibench: ibench.o
+	$(CC) $(CFLAGS) -o ibench ibench.o $(LDFLAGS)
+
+itest:	itest.o safeio.o support.o c_osinfo.o $(KOBJ)
+	$(CC) $(CFLAGS) -o itest itest.o safeio.o support.o c_osinfo.o $(KOBJ) $(LDFLAGS)
+
+idecrypt: idecrypt.o safeio.o support.o
+	$(CC) $(CFLAGS) -o idecrypt idecrypt.o safeio.o support.o $(LDFLAGS)
+
+ikeygen: ikeygen.o version.o
+	$(CC) $(CFLAGS) -o ikeygen ikeygen.o version.o $(LDFLAGS)
+
+
+c_osinfo.o:	gen_osinfo.o support.o safeio.o
+	$(CC) $(CFLAGS) -o gen_osinfo gen_osinfo.o support.o safeio.o $(LDFLAGS)
+	./gen_osinfo > c_osinfo.c
+	$(CC) $(CFLAGS) -c -o c_osinfo.o c_osinfo.c
+	rm -f c_osinfo.c gen_osinfo
+
+
+# Installing
+
+install:	$(PROGRAMS)
+	-mkdir -p $(sbindir)
+	for P in $(PROGRAMS) ; do \
+		$(INSTALL) -m 755 $${P} $(sbindir); \
+	done
+#	-mkdir -p $(etcdir)
+#	$(INSTALL) -m 644 identd.conf $(etcdir)
+
+
+
+# Cleaning up
+
+clean mostlyclean:
+	rm -f core *.o identd gen_osinfo itest ibench *~ \#*
+
+
+distclean maintainer-clean: mostlyclean
+	rm -f Makefile config.h

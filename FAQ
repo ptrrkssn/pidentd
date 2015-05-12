@@ -1,0 +1,112 @@
+Some common questions:
+
+----------------------------------------------------------------------
+
+Q: My operating system isn't supported, but it was supported in Pidentd 2!
+
+A: Please send me patches to add the needed support for Pidentd 3!
+   (Don't forget to make the old kernel-growling code threads safe at the
+   same time if you take the code from Pidentd v2!)
+
+----------------------------------------------------------------------
+
+Q: I use Solaris 7 and I just recompiled Pidentd. But now it
+   only responds with "kvm_open: Bad file number" whenever I try
+   to run it one our Ultra workstations.
+
+A: Pidentd needs to be compiled with a 64 bit compiler when run
+   on a 64 bit platform (which almost all Ultras are). Currently
+   (981126) this requires atleast the WorkShop 5.0 compilers from Sun.
+   Gcc can not be used. Compile with:
+
+	csh/tcsh:		setenv CC cc ; ./configure
+	sh/ksh/bash/zsh:	CC=cc ./configure
+
+----------------------------------------------------------------------
+
+Q: I use IBM AIX 4.2 and Pidentd returns user numbers instead of names, why?
+
+A: Because of a bug in the reentrant libc versions of getpwuid_r(). Either
+   install patch APAR IX60843 (recommended), or build the non-threaded
+   version of Pidentd (not recommended) with "./configure --without-threads".
+
+----------------------------------------------------------------------
+
+Q: My Unix doesn't have a threads library - where can I find one?
+
+A: One usable Pthreads library that has been ported to a number
+   of Unixes is Proven's library. It can be FTP'd from:
+
+	ftp://sipb.mit.edu/pub/pthreads/
+
+   However, I do not guarantee that it will work to build a
+   threaded pidentd for your operating system with that threads library.
+
+----------------------------------------------------------------------
+
+Q: I just upgraded from Solaris 2.x to Solaris 2.y _and_ have recompiled
+   Pidentd - but it doesn't work (fails compilation or at runtime).
+
+A: Make sure you are using GCC 2.8 (or later) or have updated your GCC
+   compiler installation so that it has installed *new* header files.
+   You can not use a GCC <2.8 configured for 2.x on a 2.y machine (the
+   "fixed" header files will be incorrect).
+
+----------------------------------------------------------------------
+
+Q: I just upgraded from Solaris 2.5 to Solaris 2.6 _and_ have recompiled
+   Pidentd, and have read question 3 - it still fails compilation:
+
+A:
+   Also make sure you have applied the patch to GCC <2.8 from the Solaris FAQ:
+
+	http://www.wins.uva.nl/pub/solaris/solaris2.html
+
+----------------------------------------------------------------------
+
+Q: I use the beta version of IRIX 6.5 and are getting incorrect
+   results.
+
+A: There is a bug in the reentrant function getpwuid_r(). You
+   must configure with "--without_getpw_r" and recompile (or complain
+   to SGI so that you'll get a fixed libc).
+
+----------------------------------------------------------------------
+
+Q: I just compiled it on Solaris 2.4 - and it doesn't work. All I
+   get is "NO-USER".
+
+A: Make sure you have only installed _one_ of the patches:
+
+		102049-04	 (I recommend this one)
+		102303-05
+
+   You can't have both installed at the same time.
+
+----------------------------------------------------------------------
+
+Q: I'm trying to compile with Gcc on Digital Unix 4.0D or 4.0E
+   but I'm getting errors from <c_asm.h>.
+
+A: You must use Dig^H^H^HCompaq's own C compiler when building
+   multithreaded programs - or install patch kit #3 for 4.0D and
+   patch kit #1 for 4.0E which will fix this bug in the pthread.h
+   header file (it shouldn't include the c_asm.h header file for
+   non-DEC C compilers). Or you can manually patch the Gcc "fixed"
+   "pthread.h" header file so that the "#include <c_asm.h>" is moved
+   down one line.
+
+----------------------------------------------------------------------
+
+Q: I'm trying to compile with Gcc on HP-UX 9, but the server always
+   responds with "NO-USER" when I test it.
+
+A: Make sure that your GCC is configured for exactly the right
+   machine type you are running it on. A Gcc built on a HP9K/800-series 
+   will not build correct kernel lookup could on a HP9K/700-series
+   machine (and vice-versa). A workaround for HP9K/700 machines
+   is to build Pidentd with:
+
+	make "CC=gcc -D__hp9000s700"
+
+----------------------------------------------------------------------

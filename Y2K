@@ -1,0 +1,8 @@
+As far as I can tell, Pidentd 3.0 does not contain any 
+date handling code that should be vulnerable to the year 2000
+problem.
+
+However, I don't guarantee anything so if it *does* break, you
+are on your own. 
+						
+		- Peter Eriksson <pen@lysator.liu.se>, 23 May 1998 

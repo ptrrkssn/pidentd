@@ -1,0 +1,194 @@
+
+#ifndef PIDENTD_CONFIG_H
+#define PIDENTD_CONFIG_H
+
+/* Define if you have <nlist.h>.  */
+#undef NLIST_STRUCT
+
+/* Define if you have the ANSI C header files.  */
+#undef STDC_HEADERS
+
+/* Define if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define if you have the <kvm.h> header file.  */
+#undef HAVE_KVM_H
+
+/* Define if you have the <unistd.h> header file.  */
+#undef HAVE_UNISTD_H
+
+/* Define if you have the <pthread.h> header file.  */
+#undef HAVE_PTHREAD_H
+
+/* Define if you have the <thread.h> header file.  */
+#undef HAVE_THREAD_H
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef gid_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef mode_t
+
+/* Define if your struct nlist has an n_un member.  */
+#undef NLIST_NAME_UNION
+
+/* Define to `long' if <sys/types.h> doesn't define.  */
+#undef off_t
+
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef pid_t
+
+/* Define to `unsigned' if <sys/types.h> doesn't define.  */
+#undef size_t
+  
+/* Define to `int' if <sys/types.h> doesn't define.  */
+#undef ssize_t
+
+#ifndef HAVE_STDINT_H 
+/* Define to 'unsigned int' if <sys/types.h> doesn't define. */
+#undef uint32_t
+
+/* Define to 'unsigned short' if <sys/types.h> doesn't define. */
+#undef uint16_t
+
+/* Define to 'unsigned char' if <sys/types.h> doesn't define. */
+#undef uint8_t
+#endif /* HAVE_STDINT_H */
+
+/* Workaround for Solaris 2.5.1 header file problem */
+#ifdef uint32_t
+#define _UINT32_T
+#endif
+#ifdef uint16_t
+#define _UINT16_T
+#endif
+#ifdef uint8_t
+#define _UINT8_T
+#endif
+
+/* Define to `int' ('size_t' if on AIX) if <sys/socket.h> doesn't define.  */
+#undef socklen_t
+
+/* Define to 'int' if <signal.h> doesn't define. */
+#undef RETSIGTYPE
+
+/* Define to if sprintf() doesn't return 'int' */
+#undef SPRINTF_RETVAL_POINTER
+
+/* Define if you have the random function.  */
+#undef HAVE_RANDOM
+
+/* Define if you have the srandom function.  */
+#undef HAVE_SRANDOM
+
+/* Define if you have the setsid function.  */
+#undef HAVE_SETSID
+
+/* Define if you have the ftruncate function.  */
+#undef HAVE_FTRUNCATE
+
+/* Define if you have the getpwnam_r function.  */
+#undef HAVE_GETPWNAM_R
+
+/* Define if you have the getpwuid_r function.  */
+#undef HAVE_GETPWUID_R
+
+/* Define if you have the Posix-style getpw.._r functions.  */
+#undef HAVE_POSIX_GETPW
+
+/* Define if you have the UI-style getpw.._r functions.  */
+#undef HAVE_UI_GETPW
+
+/* Define if you have the DCE-style getpw.._r functions.  */
+#undef HAVE_DCE_GETPW
+
+/* Define if you have the thr_setconcurrency function.  */
+#undef HAVE_THR_SETCONCURRENCY
+
+/* Define if you have the snprintf function.  */
+#undef HAVE_SNPRINTF
+
+/* Define if you have the snprintf function.  */
+#undef HAVE_VSNPRINTF
+
+/* Define if you have the memcpy function.  */
+#undef HAVE_MEMCPY
+
+/* Define if you have the uname function.  */
+#undef HAVE_UNAME
+
+/* Define if you have the socket function.  */
+#undef HAVE_SOCKET
+
+/* Define if you have the gethostbyname function.  */
+#undef HAVE_GETHOSTBYNAME
+
+/* Define if you have the nlist function.  */
+#undef HAVE_NLIST
+
+/* Define if you have the kvm_open function.  */
+#undef HAVE_KVM_OPEN
+
+/* Define if you have the elf library (-lelf).  */
+#undef HAVE_LIBELF
+
+/* Define if you have the kvm library (-lkvm).  */
+#undef HAVE_LIBKVM
+
+/* Define if you must have the kvm interface routines. */
+#undef NEED_LIBKVM
+
+/* Define if you have the nsl library (-lnsl).  */
+#undef HAVE_LIBNSL
+
+/* Define if you have the socket library (-lsocket).  */
+#undef HAVE_LIBSOCKET
+
+/* Define if you have the des library (-ldes).  */
+#undef HAVE_LIBDES
+
+/* Define if you have the crypto library (-lcrypto).  */
+#undef HAVE_LIBCRYPTO
+
+/* The crypto library is just an alternative packaging of the des library.  */
+#if defined(HAVE_LIBCRYPTO) && !defined(HAVE_LIBDES)
+#define HAVE_LIBDES 1
+#endif
+
+/* Define if you have the RAND_bytes() function in libcrypto */
+#undef HAVE_RAND_BYTES
+
+/* Define this if you have the /dev/random device */
+#undef HAVE_DEV_RANDOM
+
+/* Define if you have the des.h (from SSLeay) header file */
+#undef HAVE_DES_H
+
+/* Define if you have the openssl/des.h (from SSLeay) header file */
+#undef HAVE_OPENSSL_DES_H
+
+/* Define if you have the rand.h (from SSLeay) header file */
+#undef HAVE_RAND_H
+
+/* Define if you have the openssl/rand.h (from SSLeay) header file */
+#undef HAVE_OPENSSL_RAND_H
+
+/* Define if you have any working threads library. */
+#undef HAVE_THREADS
+
+/* Define if you have the pthread library (-lpthread).  */
+#undef HAVE_LIBPTHREAD
+
+/* Define if you have the AIX pthreads library (-lpthreads).  */
+#undef HAVE_LIBPTHREADS
+
+/* Define if you have the cma library (-lcma).  */
+#undef HAVE_LIBCMA
+
+/* Define if you have the thread library (-lthread).  */
+#undef HAVE_LIBTHREAD
+
+/* Define to be the path of your kernel image */
+#undef _PATH_UNIX
+
+#endif

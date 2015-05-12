@@ -1,0 +1,64 @@
+# Makefile.in for Pidentd 3.0
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+sbindir = @sbindir@
+mandir = @mandir@
+sysconfdir = @sysconfdir@
+
+srcdir = @srcdir@
+VPATH = @srcdir@
+
+CC = @CC@
+CFLAGS = @CFLAGS@
+DEFS = @DEFS@ @CPPFLAGS@
+LDFLAGS = @LDFLAGS@ @LIBS@ 
+INSTALL = @INSTALL@
+MY_CFLAGS = $(CFLAGS) $(DEFS) -DPATH_SYSCONFDIR=\\\"$(sysconfdir)\\\" -I. -I$(srcdir)/src
+TAR = tar
+
+@SET_MAKE@
+
+all identd ibench itest @CRYPTO_PROGRAMS@:
+	@cd src ; $(MAKE) $@ CC="$(CC)" CFLAGS="$(MY_CFLAGS)" LDFLAGS="$(LDFLAGS)"
+
+
+
+install:
+	@cd src ; $(MAKE) $@ CC="$(CC)" CFLAGS="$(MY_CFLAGS)" LDFLAGS="$(LDFLAGS)" install
+	-mkdir -p $(mandir)/man8
+	$(INSTALL) -m 644 $(srcdir)/doc/identd.8 $(mandir)/man8
+
+
+clean mostlyclean:
+	@$(MAKE) -f $(srcdir)/Makefile.dist clean
+
+
+distclean maintainer-clean: mostlyclean
+	@$(MAKE) -f $(srcdir)/Makefile.dist distclean
+
+dist:	distclean
+	@$(MAKE) -f $(srcdir)/Makefile.dist dist
+
+sign:
+	@$(MAKE) -f $(srcdir)/Makefile.dist sign
+
+md5:
+	@$(MAKE) -f $(srcdir)/Makefile.dist md5
+
+upload:
+	@$(MAKE) -f $(srcdir)/Makefile.dist upload
+
+version:
+	@$(MAKE) -f $(srcdir)/Makefile.dist version
+
+
+Makefile Makefiles: $(srcdir)/Makefile.in $(srcdir)/src/Makefile.in config.status 
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+
+
+

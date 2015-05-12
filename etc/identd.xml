@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<!DOCTYPE service_bundle SYSTEM "/usr/share/lib/xml/dtd/service_bundle.dtd.1">
+
+<!--
+	Copyright (c) 2005-10-18 Peter Eriksson (pen@lysator.liu.se)
+
+	This manifest can be used to manage the identd daemon using the 
+	Solaris SMF subsystem.
+
+	Import this manifest using: 
+
+		svccfg -v import identd.xml
+	
+        Then activate the daemon with:
+
+		svcadm enable network/identd
+-->
+
+<service_bundle type='manifest' name='identd'>
+
+<service
+	name='network/identd'
+	type='service'
+	version='1'>
+
+        <single_instance />
+
+	<!-- Need / & /usr filesystems mounted, /var mounted read/write -->
+	<dependency
+		name='fs-local'
+		type='service'
+		grouping='require_all'
+		restart_on='none'>
+		<service_fmri value='svc:/system/filesystem/local' />
+	</dependency>
+
+        <dependency
+            name='network-service'
+            grouping='require_all'
+            restart_on='none'
+            type='service'>
+                <service_fmri value='svc:/network/service' />
+        </dependency>
+
+        <dependency
+            name='name-services'
+            grouping='require_all'
+            restart_on='refresh'
+            type='service'>
+                <service_fmri value='svc:/milestone/name-services' />
+        </dependency>
+	
+	<exec_method
+		type='method'
+		name='start'
+		exec='/usr/sbin/in.identd'
+		timeout_seconds='60'>
+	</exec_method>
+
+	<exec_method
+		type='method'
+		name='stop'
+		exec=':kill'
+		timeout_seconds='30'>
+	</exec_method>
+
+	<instance name='default' enabled='false' />
+
+	<stability value='Evolving' />
+
+	<template>
+		<common_name>
+			<loctext xml:lang='C'>
+			IDENT Server
+			</loctext>
+		</common_name>
+		<documentation>
+			<manpage title='identd' section='1' manpath='/usr/share/man' />
+		</documentation>
+	</template>
+</service>
+
+</service_bundle>

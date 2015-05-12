@@ -1,0 +1,40 @@
+README file for Pidentd version 3.0
+
+Copyright (c) 1997-1999 Peter Eriksson <pen@lysator.liu.se>
+
+This daemon implements the IDENT protocol as specified in RFC1413
+(see the file rfc1413.txt in the doc subdirectory). It can be used
+to identify the user who initiated a TCP/IP connection. It should
+probably *NOT* be used for general authentication purposes.
+
+This is a more or less complete rewrite compared to version 2.
+
+Features:
+
+	Autoconfiguration via "configure".
+
+	Multithreaded for speed.
+
+	Doesn't have to run as root (after it has opened
+ 	the kernel devices).
+
+	Has a configuration file (identd.conf).
+
+	Sanity checks for compiled version vs operating
+	system it is being run on.
+
+	Can be started from /etc/inittab
+
+	Automatically tries to detect how it was started
+	removing the need to specify it on the command line.
+
+See the file "INSTALL" for installation instructions.
+
+If you have problems, please see the "FAQ" file and always 
+make sure you have the latest version of Pidentd. The latest
+version can always be FTP'd from:
+
+	ftp://ftp.lysator.liu.se/pub/ident/servers/
+
+
+					- Peter Eriksson <pen@lysator.liu.se>

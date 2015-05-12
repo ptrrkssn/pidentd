@@ -1,0 +1,235 @@
+INSTALL file for Pidentd 3.0
+
+Copyright (c) 1997-1999 Peter Eriksson <pen@lysator.liu.se>
+
+
+
+Basic requirements:
+
+	A working ISO (ANSI) C compiler.
+
+	A supported operating system.
+
+
+See below for OS-specific information. In case of problems, see
+the "FAQ" file and also make sure you are using the latest version
+of Pidentd. You can always FTP the latest version from:
+
+	ftp://ftp.lysator.liu.se/pub/ident/servers/
+
+
+Installation in principle:
+
+	1. Run "./configure ; make"
+
+	2. Run "make install" (or manually install the files)
+
+	3. Install (and perhaps modify) the config file (identd.conf)
+	   By default it should go into the /usr/local/etc directory,
+	   but this is changeable via the `--sysconfdir' option to
+           configure.
+
+	4. Modify the system startup scripts so that it starts
+	   automatically at system boot. See below for more info.
+
+	5. Start the daemon (see below for the alternatives on how
+           to do this).
+
+If step #1 (configure) complains about not being able to find any
+usable threads library, see the "--without-threads" option below.
+
+
+
+* A couple of options to "configure":
+
+	--without-threads
+
+		Build the daemon without threads support. This
+		is not recommended, but if you do - make sure
+		you start the daemon from /etc/inetd.conf with
+		the "nowait" option.
+
+	--with-threads=[LIB]
+
+		Where LIB may be one of:
+
+			yes 	Autoselect (the default)
+			ui	Unix International (Solaris) threads
+			posix	Posix threads
+			dce	DCE/CMA threads (Posix draft 4)
+
+
+
+
+* DES encryption
+
+The configure script will try to locate a MIT compatible DES library
+and will automatically add support for it if found. One good free
+MIT DES compatible library is Eric Youngs implementation, which can
+be FTP'd from a number of places around the world. I've tested Pidentd
+with version 4.01 of it. The primary FTP site for this library is:
+
+	ftp://ftp.psy.uq.oz.au/pub/Crypto/DES/libdes-x.xx.tar.gz
+
+The libcrypto library included with his SSLeay package also works:
+
+	ftp://ftp.psy.uq.oz.au/pub/Crypto/SSL/SSLeay-x.y.z.tar.gz
+
+The libcrypto library is actually the prefered one since it includes
+a good random DES key generator which is used (if found) by the
+Ikeygen program.
+
+To decrypt the encrypted response you can use the Idecrypt program
+which you can build with "make idecrypt". There is also a DES
+encryption/decryption key generator program Ikeygen that will
+put a key into the keyfile that you may want to build ("make ikeygen")
+
+Ie, to enable DES encryption of IDENT replies do this:
+
+	1. Install a DES library
+	2. Build the identd daemon ("make identd")
+	3. Build the idecrypt program ("make idecrypt")
+	4. Build the ikeygen progam ("make ikeygen")
+	5. Install identd
+	6. Run "ikeygen" once to create a keyfile and put
+		a new key into it.
+	7. Start/restart the identd daemon.
+
+Each time you rerun "ikeygen" it will append a new key to the
+keyfile. You must restart the Ident daemon after doing that so
+that it will read the new key.
+
+Idecrypt will attempt to decrypt the replies with each key found
+in the key file until it succeeds.
+
+
+* Modifying the system startup files
+
+If you decide to not start the daemon from /etc/inittab or /etc/inetd.conf
+then you must modify the system startup files to launch the daemon
+manually.
+
+For systems with SysV compatible init scrips you may want to use the
+file "etc/identd.init". Copy it to /etc/init.d/identd and modify it
+so that it points to the daemon binary. Then make a symbolic link from
+the right runlevel directory to this script. On Solaris this would be:
+
+	cp etc/identd.init /etc/init.d/identd
+	vi /etc/init.d/identd
+	ln -s /etc/init.d/identd /etc/rc2.d/S99identd
+
+On systems with BSD compatible init scripts you should simply
+just launch the daemon from /etc/rc.local or something similar.
+
+On Solaris 10 and later systems with the SMF (aka "Greenline") system
+you can use the "etc/identd.xml" manifest to manage Identd.
+
+
+* Starting the daemon
+
+The daemon will try to autodetect how it was invoked (as a standalone
+daemon, from inetd.conf as either a "nowait" or "wait" service or from
+/etc/inittab).
+
+*Please* note that not all implementations of Inetd support the "wait" mode
+for "stream tcp" services. In that case start it as a standalone daemon
+or from /etc/inittab instead.
+
+The one situation where it will misunderstand how it should start is
+if someone uses rsh to a remote machine to start it, like this:
+
+	rsh machine /usr/sbin/identd
+
+(It will confuse that mode (standalone, where it should fork and
+bind itself to port 113) with Inetd-nowait since in both cases
+file descriptor 0 will be a connected network socket).
+
+If the autodetection fails, then it is possible to override it with
+command line switches:
+
+	-i	Inetd, nowait mode
+	-w	Inetd, wait mode
+	-I	/etc/inittab mode
+	-b	Standalone mode
+
+The daemon should _always_ be started as "root" (it will switch
+to user "nobody" as soon as it has opened all necessary kernel
+device files).
+
+
+
+* Protecting the Ident daemon with TCP Wrappers
+
+Don't do that. But if you do - make sure that you DO NOT CONFIGURE
+YOUR TCP WRAPPER TO DO IDENT LOOKUPS for the "ident" service or you
+are risking a loop if the other end has a similar configuration. You
+can only do this when starting the daemon from Inetd using
+the "nowait" mode (which normally you do not want to do).
+
+
+* Testing the installation
+
+Build the "ibench" program with "make ibench" and then run it
+like this:
+
+	src/ibench
+
+It will by default attempt to connect to your local Ident daemon
+a large number of times during one minute and try to verify that
+the Ident daemon successfully identifies the user to executed the
+Ibench program. Please note that if you start your Ident daemon
+from /etc/inetd.conf and use "nowait" then this may cause your
+Inetd daemon to disable that service since it might think that
+the daemon is looping due to it restarting so quickly.
+Try it with "-h" for a list of the valid options.
+
+You can also use a simple Ident testing server I run on the
+machine at 130.236.254.1, port 114, like this:
+
+	telnet 130.236.254.1 114
+
+It should reply with your username (the username who started
+the "telnet" command). Beware of any potential firewalls that
+you may have at your site that may block access to this service
+(or access to your IDENT daemon from my site).
+
+
+
+* Some information for SunOS 4 users:
+
+A more-or-less usable Pthreads library for SunOS 4.1 is Proven's, that
+can be FTP'd from:
+
+	ftp://sipb.mit.edu/pub/pthreads/
+
+It won't support YP username lookups though, so you'll be limited
+to uids (or have everything in the local /etc/passwd file).
+
+You'll need to modify the installed sys/signal.h file to include
+the struct sigstack definition (check the /usr/include/sys/signal.h
+file for the struct definition).
+
+Set the "CC" environment variable to the "pgcc" wrapper script
+and then run "./configure; make".
+
+
+
+* Some information for Solaris 7 users:
+
+If you want to run pidentd on a 64-bit kernel, you need to compile with a
+compiler capabable of producing 64-bit binaries.  Both gcc 2.8.1 and egcs
+1.1 cannot do this, so you need to use SunPro C 5.0.
+
+
+
+* Some information for Silicon Graphics IRIX users:
+
+The same binary *may* be used over a range of different OS versions
+if you are lucky (but there may be problems with different IRIXes
+having different levels of threads support).
+
+See the file "doc/sgi_irix.txt" for more information. 
+
+
+
+					- Peter Eriksson <pen@lysator.liu.se>
